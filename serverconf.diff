@@ -1,0 +1,11 @@
+--- 50-server.cnf	2023-07-27 20:45:17.000000000 -0700
++++ 50-server.cnf.copy	2023-12-29 21:10:48.396574018 -0800
+@@ -7,6 +7,8 @@
+ 
+ # this is only for the mysqld standalone daemon
+ [mysqld]
++innodb_file_per_table=1
++lower_case_table_names=0
+ 
+ #
+ # * Basic Settings

@@ -22,5 +22,35 @@ run cd /etc/php/8.2/fpm/ && patch -p0 < fpm.diff && rm fpm.diff
 copy cli.diff /etc/php/8.2/cli/
 run cd /etc/php/8.2/cli/ && patch -p0 < cli.diff && rm cli.diff
 
-# TODO set system timezone to west coast time
+run rm /etc/localtime
+run ln -s /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+
+copy serverconf.diff /etc/mysql/mariadb.conf.d/
+run cd /etc/mysql/mariadb.conf.d/ && patch -p0 < serverconf.diff && rm serverconf.diff
+
+# TODO start mariadb at startup using `system mariadb start` and load the database as desired
+
+run cp /etc/php/8.2/fpm/pool.d/www.conf /etc/php/8.2/fpm/pool.d/librenms.conf
+copy wsconf.diff /etc/php/8.2/fpm/pool.d/
+run cd /etc/php/8.2/fpm/pool.d/ && patch -p0 < wsconf.diff && rm wsconf.diff && rm www.conf
+
+copy librenms.vhost /etc/nginx/sites-enabled/
+run rm /etc/nginx/sites-enabled/default
+
+run ln -s /opt/librenms/lnms /usr/bin/lnms
+run cp /opt/librenms/misc/lnms-completion.bash /etc/bash_completion.d/
+
+run cp /opt/librenms/snmpd.conf.example /etc/snmp/snmpd.conf
+
+copy snmpd.conf.diff /etc/snmp/
+run cd /etc/snmp/ && patch -p0 < snmpd.conf.diff && rm snmpd.conf.diff
+
+run curl -o /usr/bin/distro https://raw.githubusercontent.com/librenms/librenms-agent/master/snmp/distro
+run chmod +x /usr/bin/distro
+
+run cp /opt/librenms/dist/librenms.cron /etc/cron.d/librenms
+
+run cp /opt/librenms/dist/librenms-scheduler.service /opt/librenms/dist/librenms-scheduler.timer /etc/systemd/system/
+
+run cp /opt/librenms/misc/librenms.logrotate /etc/logrotate.d/librenms
 
