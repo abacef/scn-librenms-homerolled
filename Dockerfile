@@ -50,7 +50,16 @@ run chmod +x /usr/bin/distro
 
 run cp /opt/librenms/dist/librenms.cron /etc/cron.d/librenms
 
-run cp /opt/librenms/dist/librenms-scheduler.service /opt/librenms/dist/librenms-scheduler.timer /etc/systemd/system/
+run cp /opt/librenms/dist/librenms-scheduler.service /opt/librenms/dist/librenms-scheduler.timer /etc/init.d/
 
 run cp /opt/librenms/misc/librenms.logrotate /etc/logrotate.d/librenms
 
+arg initscript=init_script.sh
+arg start_script_dir=/usr/local/bin/
+copy $initscript $start_script_dir
+run chmod +x $start_script_dir$initscript
+
+expose 8000 514 514/udp 162 162/udp
+
+workdir $start_script_dir
+entrypoint init_script.sh
